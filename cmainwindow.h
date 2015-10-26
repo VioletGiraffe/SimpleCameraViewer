@@ -3,6 +3,8 @@
 
 #include <QCameraViewfinder>
 #include <QMainWindow>
+#include <QMenu>
+#include <QSystemTrayIcon>
 #include <QTimer>
 
 #include <memory>
@@ -30,8 +32,9 @@ private:
 
 	QCameraViewfinder _cameraViewWidget;
 	std::shared_ptr<QCamera> _camera;
-
 	QTimer _frameAnalysisTimer;
+	QSystemTrayIcon _trayIcon;
+	QMenu           _trayIconMenu;
 };
 
 #endif // CMAINWINDOW_H

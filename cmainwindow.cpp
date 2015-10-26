@@ -10,7 +10,8 @@
 CMainWindow::CMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::CMainWindow),
-	_cameraViewWidget(this)
+	_cameraViewWidget(this),
+	_trayIcon(QIcon(":/icon.ico"), this)
 {
 	ui->setupUi(this);
 
@@ -32,6 +33,18 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	_frameAnalysisTimer.start(333);
 	connect(&_frameAnalysisTimer, &QTimer::timeout, this, &CMainWindow::onFrameAnalysisTimerTick);
+
+	QAction * settingsAction = _trayIconMenu.addAction("Settings...");
+	connect(settingsAction, &QAction::triggered, [](){
+
+	});
+	_trayIconMenu.addSeparator();
+	QAction * exitAction = _trayIconMenu.addAction("Exit");
+	connect(exitAction, &QAction::triggered, [](){
+		QApplication::quit();
+	});
+	_trayIcon.setContextMenu(&_trayIconMenu);
+	_trayIcon.show();
 }
 
 CMainWindow::~CMainWindow()

@@ -32,3 +32,10 @@ SOURCES += main.cpp\
 HEADERS  += cmainwindow.h
 
 FORMS    += cmainwindow.ui
+
+RESOURCES += \
+    resources.qrc
+
+win*{
+    RC_FILE = simplecamviewer.rc
+}
