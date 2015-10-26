@@ -31,6 +31,9 @@ private:
 // Slots
 	// Scans the current image and takes actions (e. g. shows / hides the main window) when the image status changes
 	void analyzeImage();
+
+	void hideWindow();
+	void switchWindowToFullscreen();
 	void showSettingsDialog();
 
 private:
