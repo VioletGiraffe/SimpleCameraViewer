@@ -19,7 +19,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	_cameraViewWidget.show();
 
 	const auto cameras = QCameraInfo::availableCameras();
-	qDebug() << cameras;
+	qDebug() << "Cameras found:\n" << cameras;
 	for (const auto& cameraInfo: cameras)
 		if (!cameraInfo.isNull())
 		{
@@ -32,19 +32,9 @@ CMainWindow::CMainWindow(QWidget *parent) :
 		}
 
 	_frameAnalysisTimer.start(333);
-	connect(&_frameAnalysisTimer, &QTimer::timeout, this, &CMainWindow::onFrameAnalysisTimerTick);
+	connect(&_frameAnalysisTimer, &QTimer::timeout, this, &CMainWindow::analyzeImage);
 
-	QAction * settingsAction = _trayIconMenu.addAction("Settings...");
-	connect(settingsAction, &QAction::triggered, [](){
-
-	});
-	_trayIconMenu.addSeparator();
-	QAction * exitAction = _trayIconMenu.addAction("Exit");
-	connect(exitAction, &QAction::triggered, [](){
-		QApplication::quit();
-	});
-	_trayIcon.setContextMenu(&_trayIconMenu);
-	_trayIcon.show();
+	setupTrayIcon();
 }
 
 CMainWindow::~CMainWindow()
@@ -52,7 +42,22 @@ CMainWindow::~CMainWindow()
 	delete ui;
 }
 
-void CMainWindow::onFrameAnalysisTimerTick()
+void CMainWindow::setupTrayIcon()
+{
+	QAction * settingsAction = _trayIconMenu.addAction("Settings...");
+	connect(settingsAction, &QAction::triggered, this, &CMainWindow::showSettingsDialog);
+
+	_trayIconMenu.addSeparator();
+
+	QAction * exitAction = _trayIconMenu.addAction("Exit");
+	connect(exitAction, &QAction::triggered, &QApplication::quit);
+
+	_trayIcon.setContextMenu(&_trayIconMenu);
+	_trayIcon.show();
+}
+
+// Scans the current image and takes actions (e. g. shows / hides the main window) when the image status changes
+void CMainWindow::analyzeImage()
 {
 	const int sampleSquareSize = 20;
 	const auto frame = _cameraViewWidget.grab().copy(QRect(QPoint(_cameraViewWidget.width()/2 - sampleSquareSize/2, _cameraViewWidget.height()/2 - sampleSquareSize/2), QSize(sampleSquareSize, sampleSquareSize))).toImage();
@@ -72,4 +77,9 @@ void CMainWindow::onFrameAnalysisTimerTick()
 	// Valid image NOT detected
 	if ((windowState() & Qt::WindowFullScreen) != 0)
 		hide();
+}
+
+void CMainWindow::showSettingsDialog()
+{
+
 }
