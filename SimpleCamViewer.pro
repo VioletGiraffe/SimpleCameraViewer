@@ -20,6 +20,7 @@ mac* | linux*{
 Release:OUTPUT_DIR=release
 Debug:OUTPUT_DIR=debug
 
+DESTDIR  = bin/$${OUTPUT_DIR}
 OBJECTS_DIR = build/$${OUTPUT_DIR}
 MOC_DIR     = build/$${OUTPUT_DIR}
 UI_DIR      = build/$${OUTPUT_DIR}
