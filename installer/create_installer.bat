@@ -13,7 +13,7 @@ pushd ..\
 popd
 
 call "%VS_TOOLS_DIR%VsDevCmd.bat" x86
-msbuild ..\SimpleCamViewer.sln /t:Rebuild /p:Configuration=Release;PlatformToolset=v120_xp
+msbuild ..\SimpleCamViewer.sln /t:Build /p:Configuration=Release;PlatformToolset=v120_xp
 
 xcopy /R /Y ..\bin\release\SimpleCamViewer.exe binaries\
 

@@ -1,0 +1,6 @@
+[submodule "qtutils"]
+	path = qtutils
+	url = https://github.com/VioletGiraffe/qtutils
+[submodule "cpputils"]
+	path = cpputils
+	url = https://github.com/VioletGiraffe/cpputils

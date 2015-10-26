@@ -9,7 +9,7 @@ OutputDir=.
 OutputBaseFilename=SimpleCameraViewer
 UsePreviousAppDir=yes
 
-SetupIconFile=..\icon.ico
+SetupIconFile=..\app\resources\icon.ico
 UninstallDisplayIcon={app}\SimpleCamViewer.exe
 
 WizardImageBackColor=clWhite
