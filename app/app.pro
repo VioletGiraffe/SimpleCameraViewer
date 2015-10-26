@@ -26,19 +26,30 @@ MOC_DIR     = ../build/$${OUTPUT_DIR}
 UI_DIR      = ../build/$${OUTPUT_DIR}
 RCC_DIR     = ../build/$${OUTPUT_DIR}
 
+INCLUDEPATH += \
+    ../qtutils/ \
+    ../cpputils/
+
 
 SOURCES += \
     main.cpp\
     cmainwindow.cpp \
-    settings/csettingsdialog.cpp
+    settings/csettingspagegeneral.cpp \
+    settings/csettingspagecamera.cpp \
+    ccameraslist.cpp
 
 HEADERS += \
     cmainwindow.h \
-    settings/csettingsdialog.h
+    settings/csettingspagegeneral.h \
+    settings/csettingspagecamera.h \
+    settings/settings.h \
+    ccameraslist.h
 
 FORMS += \
     cmainwindow.ui \
-    settings/csettingsdialog.ui
+    settings/csettingspagegeneral.ui \
+    settings/csettingspagecamera.ui \
+    ccameraslist.ui
 
 RESOURCES += \
     resources/resources.qrc

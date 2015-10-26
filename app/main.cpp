@@ -1,10 +1,21 @@
 #include "cmainwindow.h"
+#include "settings/csettings.h"
+
+DISABLE_COMPILER_WARNINGS
 #include <QApplication>
+RESTORE_COMPILER_WARNINGS
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
+	QApplication app(argc, argv);
+
+	app.setOrganizationName("GitHubSoft");
+	app.setApplicationName("Simple Camera Viewer");
+
+	CSettings::setApplicationName(app.applicationName());
+	CSettings::setOrganizationName(app.organizationName());
+
 	CMainWindow w;
 
-	return a.exec();
+	return app.exec();
 }
