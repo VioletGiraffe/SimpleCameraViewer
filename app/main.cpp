@@ -8,6 +8,7 @@ RESTORE_COMPILER_WARNINGS
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+	app.setQuitOnLastWindowClosed(false);
 
 	app.setOrganizationName("GitHubSoft");
 	app.setApplicationName("Simple Camera Viewer");
