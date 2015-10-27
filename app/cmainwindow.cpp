@@ -59,9 +59,13 @@ const int sampleSquareSize = 20;
 // Scans the current image and takes actions (e. g. shows / hides the main window) when the image status changes
 void CMainWindow::analyzeImage()
 {
-	const auto frame = _cameraViewWidget.grab().copy(QRect(QPoint(_cameraViewWidget.width()/2 - sampleSquareSize/2, _cameraViewWidget.height()/2 - sampleSquareSize/2), QSize(sampleSquareSize, sampleSquareSize))).toImage();
-	for (int y = 0; y < sampleSquareSize; ++y)
-		for (int x = 0; x < sampleSquareSize; ++x)
+	const QImage frame = _cameraViewWidget.width() < sampleSquareSize || _cameraViewWidget.height() < sampleSquareSize ? 
+		_cameraViewWidget.grab().toImage() :
+		_cameraViewWidget.grab().copy(QRect(QPoint(_cameraViewWidget.width()/2 - sampleSquareSize/2, _cameraViewWidget.height()/2 - sampleSquareSize/2), QSize(sampleSquareSize, sampleSquareSize))).toImage();
+
+	const int w = frame.width(), h = frame.height();
+	for (int y = 0; y < h; ++y)
+		for (int x = 0; x < w; ++x)
 			if ((frame.pixel(x, y) & 0x00FFFFFFu) != 0)
 			{
 				// Valid image detected!
@@ -119,8 +123,7 @@ void CMainWindow::hideWindow()
 	if ((windowState() & Qt::WindowFullScreen) != 0) // Not hidden yet
 	{
 		_cameraViewWidget.setMinimumSize(QSize(sampleSquareSize, sampleSquareSize));
-		setMinimumSize(_cameraViewWidget.minimumSize());
-		resize(_cameraViewWidget.minimumSize());
+		_cameraViewWidget.resize(_cameraViewWidget.minimumSize());
 		hide();
 	}
 }
