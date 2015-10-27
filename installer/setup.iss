@@ -36,7 +36,7 @@ Source: binaries/Qt/*; DestDir: {app}; Flags: ignoreversion recursesubdirs
 Source: binaries/msvcr/*; DestDir: {app}; Flags: ignoreversion
 
 [Icons]
-Name: {group}\File Commander; Filename: {app}\SimpleCamViewer.exe;
+Name: {group}\Simple Camera Viewer; Filename: {app}\SimpleCamViewer.exe;
 Name: {group}\{cm:UninstallProgram,Simple Camera Viewer}; Filename: {uninstallexe}
 Name: {userstartup}\Simple Camera Viewer; Filename: {app}\SimpleCamViewer.exe; Tasks: startup
 
