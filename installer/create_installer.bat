@@ -29,4 +29,4 @@ del binaries\Qt\opengl*.*
 
 ENDLOCAL
 
-"c:\Program Files (x86)\Inno Setup 5\compil32" /cc setup.iss
+"c:\Program Files (x86)\Inno Setup 5\iscc" setup.iss
