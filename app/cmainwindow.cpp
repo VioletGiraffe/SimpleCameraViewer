@@ -8,7 +8,6 @@ DISABLE_COMPILER_WARNINGS
 #include "ui_cmainwindow.h"
 
 #include <QCamera>
-#include <QCameraImageCapture>
 #include <QCameraInfo>
 #include <QDebug>
 #include <QImage>
@@ -66,12 +65,15 @@ void CMainWindow::analyzeImage()
 	const int w = frame.width(), h = frame.height();
 	for (int y = 0; y < h; ++y)
 		for (int x = 0; x < w; ++x)
-			if ((frame.pixel(x, y) & 0x00FFFFFFu) != 0)
+		{
+			const QRgb pixel = frame.pixel(x, y);
+			if ((pixel & 0x00F8F8F8u) != 0) // Letting the last 3 bits of each color component be non-zero, since it may happen, for whatever reason
 			{
 				// Valid image detected!
 				switchWindowToFullscreen();
 				return;
 			}
+		}
 
 	// Valid image NOT detected
 	hideWindow();
@@ -94,6 +96,9 @@ void CMainWindow::updateCamerasList()
 			{
 				_currentCameraDeviceName = cameraName;
 				_camera = std::make_shared<QCamera>(cameraInfo);
+				auto settings = _camera->viewfinderSettings();
+				settings.setResolution(QSize(CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, 720).toUInt(), CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, 576).toUInt()));
+				_camera->setViewfinderSettings(settings);
 				_camera->setViewfinder(&_cameraViewWidget);
 				_camera->start();
 			}
@@ -124,6 +129,7 @@ void CMainWindow::hideWindow()
 	{
 		_cameraViewWidget.setMinimumSize(QSize(sampleSquareSize, sampleSquareSize));
 		_cameraViewWidget.resize(_cameraViewWidget.minimumSize());
+		setWindowState(windowState() & ~Qt::WindowFullScreen);
 		hide();
 	}
 }
