@@ -13,8 +13,6 @@ class CCamerasList;
 
 class CCamerasList : public QDialog
 {
-	Q_OBJECT
-
 public:
 	explicit CCamerasList(QWidget *parent = 0);
 	~CCamerasList();

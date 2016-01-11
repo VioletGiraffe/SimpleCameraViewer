@@ -9,8 +9,6 @@ class CSettingsPageGeneral;
 
 class CSettingsPageGeneral : public CSettingsPage
 {
-	Q_OBJECT
-
 public:
 	explicit CSettingsPageGeneral(QWidget *parent = 0);
 	~CSettingsPageGeneral();

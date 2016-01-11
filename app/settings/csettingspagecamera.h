@@ -9,8 +9,6 @@ class CSettingsPageCamera;
 
 class CSettingsPageCamera : public CSettingsPage
 {
-	Q_OBJECT
-
 public:
 	explicit CSettingsPageCamera(QWidget *parent = 0);
 	~CSettingsPageCamera();
