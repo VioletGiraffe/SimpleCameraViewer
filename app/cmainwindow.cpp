@@ -67,7 +67,7 @@ void CMainWindow::analyzeImage()
 		for (int x = 0; x < w; ++x)
 		{
 			const QRgb pixel = frame.pixel(x, y);
-			if ((pixel & 0x00F8F8F8u) != 0) // Letting the last 3 bits of each color component be non-zero, since it may happen, for whatever reason
+			if ((pixel & 0x00F0F0F0u) != 0) // Letting the last 4 bits of each color component be non-zero, since it may happen, for whatever reason
 			{
 				// Valid image detected!
 				switchWindowToFullscreen();
