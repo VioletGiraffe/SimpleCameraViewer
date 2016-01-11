@@ -42,7 +42,10 @@ CMainWindow::CMainWindow(QWidget *parent) :
 		QMenu menu(this);
 		const QAction * const cropImageAction = menu.addAction("Crop image");
 		if (menu.exec(_cameraViewWidget.mapToGlobal(point)) == cropImageAction)
+		{
 			_cropHandler.activate();
+			_cameraViewWidget.update(); // To render the hint text
+		}
 	});
 
 	_cameraViewWidget.installEventFilter(&_cropHandler);
@@ -52,6 +55,8 @@ CMainWindow::CMainWindow(QWidget *parent) :
 		CSettings().setValue(SETTINGS_KEY_IMAGE_HEIGHT, frame.height());
 		applyViewFinderResolutionSettings();
 	});
+
+	showNormal();
 }
 
 CMainWindow::~CMainWindow()
@@ -141,13 +146,13 @@ void CMainWindow::showCamerasList()
 
 void CMainWindow::hideWindow()
 {
-	if ((windowState() & Qt::WindowFullScreen) != 0) // Not hidden yet
-	{
-		_cameraViewWidget.setMinimumSize(QSize(sampleSquareSize, sampleSquareSize));
-		_cameraViewWidget.resize(_cameraViewWidget.minimumSize());
-		setWindowState(windowState() & ~Qt::WindowFullScreen);
-		hide();
-	}
+// 	if ((windowState() & Qt::WindowFullScreen) != 0) // Not hidden yet
+// 	{
+// 		_cameraViewWidget.setMinimumSize(QSize(sampleSquareSize, sampleSquareSize));
+// 		_cameraViewWidget.resize(_cameraViewWidget.minimumSize());
+// 		setWindowState(windowState() & ~Qt::WindowFullScreen);
+// 		hide();
+// 	}
 }
 
 void CMainWindow::switchWindowToFullscreen()
@@ -229,8 +234,20 @@ bool CCropFrameHandler::eventFilter(QObject * target, QEvent * event)
 		{
 			target->event(event);
 			QPainter painter(targetWidget);
+
+			const QRect textRect = QRect(0, 0, targetWidget->width(), 50);
+			const QString hintText = tr("Hold LMB and drag to select the crop area.\nRelease the button to apply.");
+			const float factor = std::min(
+				textRect.width() / (float)painter.fontMetrics().width(hintText),
+				textRect.height() / ((float)painter.fontMetrics().height() * (hintText.count('\n') + 1)) // Text height = number of text lines * line height
+				);
+			QFont font = painter.font();
+			font.setPointSizeF(font.pointSizeF() * factor);
+			painter.setFont(font);
+
 			QPen pen = painter.pen();
 			painter.setPen(Qt::green);
+			painter.drawText(textRect, Qt::AlignCenter, hintText);
 			painter.drawRect(0, 0, _lastMousePos.x(), _lastMousePos.y());
 		}
 
