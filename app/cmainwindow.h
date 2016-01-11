@@ -21,10 +21,33 @@ class CMainWindow;
 class QCamera;
 class QCameraImageCapture;
 
-class CMainWindow : public QMainWindow
+class CCropFrameHandler : public QObject
 {
 	Q_OBJECT
 
+public:
+	inline void activate() {
+		_lastMousePos = {0, 0};
+		_active = true;
+	}
+
+	inline const bool active() const {
+		return _active;
+	}
+
+signals:
+	void cropFrameEdited(QRect frame);
+
+protected:
+	bool eventFilter(QObject * target, QEvent * event) override;
+
+private:
+	QPoint _lastMousePos;
+	bool   _active = false;
+};
+
+class CMainWindow : public QMainWindow
+{
 public:
 	explicit CMainWindow(QWidget *parent = 0);
 
@@ -44,6 +67,8 @@ private:
 	void switchWindowToFullscreen();
 	void showSettingsDialog();
 
+	void applyViewFinderResolutionSettings();
+
 private:
 	Ui::CMainWindow *ui;
 
@@ -57,6 +82,8 @@ private:
 	// Timer for updating the list of cameras
 	QTimer _camerasListUpdateTimer;
 	CCamerasList _camerasListDialog;
+
+	CCropFrameHandler _cropHandler;
 };
 
 #endif // CMAINWINDOW_H

@@ -11,6 +11,8 @@ DISABLE_COMPILER_WARNINGS
 #include <QCameraInfo>
 #include <QDebug>
 #include <QImage>
+#include <QMouseEvent>
+#include <QPainter>
 RESTORE_COMPILER_WARNINGS
 
 CMainWindow::CMainWindow(QWidget *parent) :
@@ -22,6 +24,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	_cameraViewWidget.setContextMenuPolicy(Qt::CustomContextMenu);
 	setCentralWidget(&_cameraViewWidget);
 	_cameraViewWidget.show();
 
@@ -34,6 +37,21 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	setupTrayIcon();
 
 	updateCamerasList();
+
+	connect(&_cameraViewWidget, &QWidget::customContextMenuRequested, [this](const QPoint& point){
+		QMenu menu(this);
+		const QAction * const cropImageAction = menu.addAction("Crop image");
+		if (menu.exec(_cameraViewWidget.mapToGlobal(point)) == cropImageAction)
+			_cropHandler.activate();
+	});
+
+	_cameraViewWidget.installEventFilter(&_cropHandler);
+	connect(&_cropHandler, &CCropFrameHandler::cropFrameEdited, [this](const QRect frame) {
+
+		CSettings().setValue(SETTINGS_KEY_IMAGE_WIDTH, frame.width());
+		CSettings().setValue(SETTINGS_KEY_IMAGE_HEIGHT, frame.height());
+		applyViewFinderResolutionSettings();
+	});
 }
 
 CMainWindow::~CMainWindow()
@@ -96,9 +114,7 @@ void CMainWindow::updateCamerasList()
 			{
 				_currentCameraDeviceName = cameraName;
 				_camera = std::make_shared<QCamera>(cameraInfo);
-				auto settings = _camera->viewfinderSettings();
-				settings.setResolution(QSize(CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, 720).toUInt(), CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, 576).toUInt()));
-				_camera->setViewfinderSettings(settings);
+				applyViewFinderResolutionSettings();
 				_camera->setViewfinder(&_cameraViewWidget);
 				_camera->start();
 			}
@@ -151,4 +167,78 @@ void CMainWindow::showSettingsDialog()
 	_trayIconMenu.setEnabled(false);
 	settingsDialog.exec();
 	_trayIconMenu.setEnabled(true);
+}
+
+void CMainWindow::applyViewFinderResolutionSettings()
+{
+	if (!_camera)
+		return;
+
+	auto settings = _camera->viewfinderSettings();
+	settings.setResolution(QSize(CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, 720).toUInt(), CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, 576).toUInt()));
+	_camera->setViewfinderSettings(settings);
+}
+
+bool CCropFrameHandler::eventFilter(QObject * target, QEvent * event)
+{
+	QWidget * targetWidget = dynamic_cast<QWidget*>(target);
+	if (!targetWidget)
+		return false;
+
+	switch (event->type())
+	{
+	case QEvent::MouseButtonPress:
+	{
+		QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent*>(event);
+		if (_active && mouseEvent && mouseEvent->button() == Qt::LeftButton)
+		{
+			_lastMousePos = mouseEvent->pos();
+			targetWidget->update();
+		}
+		else
+			_active = false; // Just in case
+		break;
+	}
+	case QEvent::MouseMove:
+	{
+		QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent*>(event);
+		if (_active && mouseEvent)
+		{
+			_lastMousePos = mouseEvent->pos();
+			targetWidget->update();
+		}
+		break;
+	}
+	case QEvent::MouseButtonRelease:
+	{
+		if (_active)
+		{
+			targetWidget->update();
+			_active = false;
+			_lastMousePos = {0, 0};
+
+			QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent*>(event);
+			if (mouseEvent)
+				emit cropFrameEdited(QRect(0, 0, mouseEvent->pos().x(), mouseEvent->pos().y()));
+		}
+		break;
+	}
+	case QEvent::Paint:
+	{
+		if (_active)
+		{
+			target->event(event);
+			QPainter painter(targetWidget);
+			QPen pen = painter.pen();
+			painter.setPen(Qt::green);
+			painter.drawRect(0, 0, _lastMousePos.x(), _lastMousePos.y());
+		}
+
+		break;
+	}
+	default:
+		break;
+	}
+
+	return false;
 }
