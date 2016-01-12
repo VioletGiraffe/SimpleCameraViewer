@@ -28,7 +28,8 @@ RCC_DIR     = ../build/$${OUTPUT_DIR}
 
 INCLUDEPATH += \
     ../qtutils/ \
-    ../cpputils/
+    ../cpputils/ \
+    ../github-releases-autoupdater/src/
 
 
 SOURCES += \
@@ -36,20 +37,24 @@ SOURCES += \
     cmainwindow.cpp \
     settings/csettingspagegeneral.cpp \
     settings/csettingspagecamera.cpp \
-    ccameraslist.cpp
+    ccameraslist.cpp \
+    updater/cupdaterdialog.cpp
 
 HEADERS += \
     cmainwindow.h \
     settings/csettingspagegeneral.h \
     settings/csettingspagecamera.h \
     settings/settings.h \
-    ccameraslist.h
+    ccameraslist.h \
+    updater/cupdaterdialog.h \
+    version.h
 
 FORMS += \
     cmainwindow.ui \
     settings/csettingspagegeneral.ui \
     settings/csettingspagecamera.ui \
-    ccameraslist.ui
+    ccameraslist.ui \
+    updater/cupdaterdialog.ui
 
 RESOURCES += \
     resources/resources.qrc
@@ -62,4 +67,4 @@ win*{
     DEFINES += WIN32_LEAN_AND_MEAN NOMINMAX
 }
 
-LIBS += -L../bin/$${OUTPUT_DIR} -lqtutils -lcpputils
+LIBS += -L../bin/$${OUTPUT_DIR} -lqtutils -lcpputils -lautoupdater

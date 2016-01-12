@@ -3,12 +3,14 @@
 #include "settings/csettingspagecamera.h"
 #include "settings/settings.h"
 #include "settings/csettings.h"
+#include "updater/cupdaterdialog.h"
 
 DISABLE_COMPILER_WARNINGS
 #include "ui_cmainwindow.h"
 
 #include <QCamera>
 #include <QCameraInfo>
+#include <QDateTime>
 #include <QDebug>
 #include <QImage>
 #include <QMouseEvent>
@@ -56,7 +58,14 @@ CMainWindow::CMainWindow(QWidget *parent) :
 		applyViewFinderResolutionSettings();
 	});
 
-	showNormal();
+	// Check for updates
+	if (CSettings().value(SETTINGS_KEY_LAST_UPDATE_CHECK_TIMESTAMP, QDateTime::fromTime_t(1)).toDateTime().msecsTo(QDateTime::currentDateTime()) >= 1000 * 3600 * 24)
+	{
+		CSettings().setValue(SETTINGS_KEY_LAST_UPDATE_CHECK_TIMESTAMP, QDateTime::currentDateTime());
+		auto dlg = new CUpdaterDialog(this, true);
+		connect(dlg, &QDialog::rejected, dlg, &QDialog::deleteLater);
+		connect(dlg, &QDialog::accepted, dlg, &QDialog::deleteLater);
+	}
 }
 
 CMainWindow::~CMainWindow()
@@ -69,6 +78,11 @@ void CMainWindow::setupTrayIcon()
 	connect(_trayIconMenu.addAction("Show cameras list..."), &QAction::triggered, this, &CMainWindow::showCamerasList);
 	_trayIconMenu.addSeparator();
 	connect(_trayIconMenu.addAction("Settings..."), &QAction::triggered, this, &CMainWindow::showSettingsDialog);
+	_trayIconMenu.addSeparator();
+	connect(_trayIconMenu.addAction("Check for updates..."), &QAction::triggered, [this](){
+		CSettings().setValue(SETTINGS_KEY_LAST_UPDATE_CHECK_TIMESTAMP, QDateTime::currentDateTime());
+		CUpdaterDialog(this).exec();
+	});
 	_trayIconMenu.addSeparator();
 	connect(_trayIconMenu.addAction("Exit"), &QAction::triggered, &QApplication::quit);
 
@@ -146,13 +160,13 @@ void CMainWindow::showCamerasList()
 
 void CMainWindow::hideWindow()
 {
-// 	if ((windowState() & Qt::WindowFullScreen) != 0) // Not hidden yet
-// 	{
-// 		_cameraViewWidget.setMinimumSize(QSize(sampleSquareSize, sampleSquareSize));
-// 		_cameraViewWidget.resize(_cameraViewWidget.minimumSize());
-// 		setWindowState(windowState() & ~Qt::WindowFullScreen);
-// 		hide();
-// 	}
+	if ((windowState() & Qt::WindowFullScreen) != 0) // Not hidden yet
+	{
+		_cameraViewWidget.setMinimumSize(QSize(sampleSquareSize, sampleSquareSize));
+		_cameraViewWidget.resize(_cameraViewWidget.minimumSize());
+		setWindowState(windowState() & ~Qt::WindowFullScreen);
+		hide();
+	}
 }
 
 void CMainWindow::switchWindowToFullscreen()
