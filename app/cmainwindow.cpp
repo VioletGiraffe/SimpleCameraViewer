@@ -98,10 +98,7 @@ const int sampleSquareSize = 20;
 // Scans the current image and takes actions (e. g. shows / hides the main window) when the image status changes
 void CMainWindow::analyzeFrame()
 {
-	// TODO: analyze the rectangle of interest in-place without this intermediate QImage
-	const QImage frame = _cameraViewWidget.width() < sampleSquareSize || _cameraViewWidget.height() < sampleSquareSize ? 
-		_cameraViewWidget.grab().toImage() :
-		_cameraViewWidget.grab().copy(QRect(QPoint(_cameraViewWidget.width()/2 - sampleSquareSize/2, _cameraViewWidget.height()/2 - sampleSquareSize/2), QSize(sampleSquareSize, sampleSquareSize))).toImage();
+	const QImage frame = _cameraViewWidget.grab().toImage();
 
 	if (frame.depth() != 32)
 	{
@@ -116,11 +113,12 @@ void CMainWindow::analyzeFrame()
 	}
 
 	const int w = frame.width(), h = frame.height();
+	const int sampleStrideW = w / sampleSquareSize, sampleStrideH = h / sampleSquareSize;
 	uint64_t pixelsValueSum = 0;
-	for (int y = 0; y < h; ++y)
+	for (int y = 0; y < h; y += sampleStrideH)
 	{
 		const uint32_t* scanLine = (uint32_t*)frame.scanLine(y);
-		for (int x = 0; x < w; ++x)
+		for (int x = 0; x < w; x += sampleStrideW)
 		{
 			// TODO: support non-32 bpp images
 			// TODO: vectorization
@@ -129,8 +127,9 @@ void CMainWindow::analyzeFrame()
 		}
 	}
 
-	const auto avgValue = pixelsValueSum / ((uint64_t)w * (uint64_t)h * 3ull);
-	if (avgValue >= CSettings().value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, 20).toInt())
+	const auto avgValue = pixelsValueSum / ((uint64_t)w / sampleStrideW * (uint64_t)h / sampleStrideH * 3ull);
+	qDebug() << avgValue;
+	if (avgValue >= CSettings().value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, 10).toInt())
 	{
 		// Non-empty image detected
 		switchWindowToFullscreen();
