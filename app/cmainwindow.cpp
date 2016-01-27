@@ -129,7 +129,7 @@ void CMainWindow::analyzeFrame()
 
 	const auto avgValue = pixelsValueSum / ((uint64_t)w / sampleStrideW * (uint64_t)h / sampleStrideH * 3ull);
 	qDebug() << avgValue;
-	if (avgValue >= CSettings().value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, 10).toInt())
+	if (avgValue >= CSettings().value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD_DEFAULT_VALUE).toInt())
 	{
 		// Non-empty image detected
 		switchWindowToFullscreen();
@@ -218,8 +218,13 @@ void CMainWindow::applyViewFinderResolutionSettings()
 	if (!_camera)
 		return;
 
+	const int width = CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, SETTINGS_KEY_IMAGE_WIDTH_DEFAULT_VALUE).toInt();
+	const int height = CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, SETTINGS_KEY_IMAGE_HEIGHT_DEFAULT_VALUE).toInt();
+	if (width == 0|| height == 0)
+		return;
+
 	auto settings = _camera->viewfinderSettings();
-	settings.setResolution(QSize(CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, 720).toUInt(), CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, 576).toUInt()));
+	settings.setResolution(width, height);
 	_camera->setViewfinderSettings(settings);
 }
 

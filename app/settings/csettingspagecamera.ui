@@ -67,17 +67,20 @@
           <property name="toolTip">
            <string>Actual image width in pixels. Use this setting to crop possible garbage to the right of the image.</string>
           </property>
+          <property name="specialValueText">
+           <string>No crop</string>
+          </property>
           <property name="accelerated">
            <bool>true</bool>
           </property>
           <property name="minimum">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="maximum">
            <number>9999</number>
           </property>
           <property name="value">
-           <number>720</number>
+           <number>0</number>
           </property>
          </widget>
         </item>
@@ -96,17 +99,20 @@
           <property name="toolTip">
            <string>Actual image height in pixels. Use this setting to crop possible garbage below the image.</string>
           </property>
+          <property name="specialValueText">
+           <string>No crop</string>
+          </property>
           <property name="accelerated">
            <bool>true</bool>
           </property>
           <property name="minimum">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="maximum">
            <number>9999</number>
           </property>
           <property name="value">
-           <number>576</number>
+           <number>0</number>
           </property>
          </widget>
         </item>
@@ -142,7 +148,7 @@
            <number>255</number>
           </property>
           <property name="value">
-           <number>20</number>
+           <number>10</number>
           </property>
          </widget>
         </item>
