@@ -58,7 +58,7 @@ private:
 
 // Slots
 	// Scans the current image and takes actions (e. g. shows / hides the main window) when the image status changes
-	void analyzeImage();
+	void analyzeFrame();
 	// Searches for available cameras and connects to the first one, if any, that matches the name filter
 	void updateCamerasList();
 	void showCamerasList();

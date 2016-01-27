@@ -17,6 +17,7 @@ CSettingsPageCamera::CSettingsPageCamera(QWidget *parent) :
 	ui->_leCameraFilter->setText(s.value(SETTINGS_KEY_CAMERA_NAME_FILTER).toString());
 	ui->_sbImageWidth->setValue(s.value(SETTINGS_KEY_IMAGE_WIDTH, 720).toInt());
 	ui->_sbImageHeight->setValue(s.value(SETTINGS_KEY_IMAGE_HEIGHT, 576).toInt());
+	ui->_sbPixelValueThreshold->setValue(s.value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, 20).toInt());
 }
 
 CSettingsPageCamera::~CSettingsPageCamera()
@@ -30,4 +31,5 @@ void CSettingsPageCamera::acceptSettings()
 	s.setValue(SETTINGS_KEY_CAMERA_NAME_FILTER, ui->_leCameraFilter->text());
 	s.setValue(SETTINGS_KEY_IMAGE_WIDTH, ui->_sbImageWidth->value());
 	s.setValue(SETTINGS_KEY_IMAGE_HEIGHT, ui->_sbImageHeight->value());
+	s.setValue(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, ui->_sbPixelValueThreshold->value());
 }

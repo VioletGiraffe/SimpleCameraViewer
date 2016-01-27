@@ -13,9 +13,12 @@ DISABLE_COMPILER_WARNINGS
 #include <QDateTime>
 #include <QDebug>
 #include <QImage>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QPainter>
 RESTORE_COMPILER_WARNINGS
+
+#include <Windows.h>
 
 CMainWindow::CMainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -30,10 +33,10 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	setCentralWidget(&_cameraViewWidget);
 	_cameraViewWidget.show();
 
-	_frameAnalysisTimer.start(333);
-	connect(&_frameAnalysisTimer, &QTimer::timeout, this, &CMainWindow::analyzeImage);
+	_frameAnalysisTimer.start(700);
+	connect(&_frameAnalysisTimer, &QTimer::timeout, this, &CMainWindow::analyzeFrame);
 
-	_camerasListUpdateTimer.start(1000);
+	_camerasListUpdateTimer.start(2000);
 	connect(&_camerasListUpdateTimer, &QTimer::timeout, this, &CMainWindow::updateCamerasList);
 
 	setupTrayIcon();
@@ -93,27 +96,50 @@ void CMainWindow::setupTrayIcon()
 const int sampleSquareSize = 20;
 
 // Scans the current image and takes actions (e. g. shows / hides the main window) when the image status changes
-void CMainWindow::analyzeImage()
+void CMainWindow::analyzeFrame()
 {
+	// TODO: analyze the rectangle of interest in-place without this intermediate QImage
 	const QImage frame = _cameraViewWidget.width() < sampleSquareSize || _cameraViewWidget.height() < sampleSquareSize ? 
 		_cameraViewWidget.grab().toImage() :
 		_cameraViewWidget.grab().copy(QRect(QPoint(_cameraViewWidget.width()/2 - sampleSquareSize/2, _cameraViewWidget.height()/2 - sampleSquareSize/2), QSize(sampleSquareSize, sampleSquareSize))).toImage();
 
-	const int w = frame.width(), h = frame.height();
-	for (int y = 0; y < h; ++y)
-		for (int x = 0; x < w; ++x)
+	if (frame.depth() != 32)
+	{
+		static bool messageShown = false;
+		if (!messageShown)
 		{
-			const QRgb pixel = frame.pixel(x, y);
-			if ((pixel & 0x00F0F0F0u) != 0) // Letting the last 4 bits of each color component be non-zero, since it may happen, for whatever reason
-			{
-				// Valid image detected!
-				switchWindowToFullscreen();
-				return;
-			}
+			messageShown = true;
+			QMessageBox::critical(this, tr("Unsupported image format"), tr("Only 32 bpp image format is supported"));
 		}
 
-	// Valid image NOT detected
-	hideWindow();
+		return;
+	}
+
+	const int w = frame.width(), h = frame.height();
+	uint64_t pixelsValueSum = 0;
+	for (int y = 0; y < h; ++y)
+	{
+		const uint32_t* scanLine = (uint32_t*)frame.scanLine(y);
+		for (int x = 0; x < w; ++x)
+		{
+			// TODO: support non-32 bpp images
+			// TODO: vectorization
+			const uint32_t pixel = scanLine[y];
+			pixelsValueSum += ((pixel & 0x00FF0000) >> 16) + ((pixel & 0x0000FF00) >> 8) + (pixel & 0x000000FF);
+		}
+	}
+
+	const auto avgValue = pixelsValueSum / ((uint64_t)w * (uint64_t)h * 3ull);
+	if (avgValue >= CSettings().value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, 20).toInt())
+	{
+		// Non-empty image detected
+		switchWindowToFullscreen();
+	}
+	else
+	{
+		// Valid image NOT detected
+		hideWindow();
+	}
 }
 
 // Searches for available cameras and connects to the first one, if any, that matches the name filter
