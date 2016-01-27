@@ -43,15 +43,15 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	updateCamerasList();
 
-	connect(&_cameraViewWidget, &QWidget::customContextMenuRequested, [this](const QPoint& point){
-		QMenu menu(this);
-		const QAction * const cropImageAction = menu.addAction("Crop image");
-		if (menu.exec(_cameraViewWidget.mapToGlobal(point)) == cropImageAction)
-		{
-			_cropHandler.activate();
-			_cameraViewWidget.update(); // To render the hint text
-		}
-	});
+// 	connect(&_cameraViewWidget, &QWidget::customContextMenuRequested, [this](const QPoint& point){
+// 		QMenu menu(this);
+// 		const QAction * const cropImageAction = menu.addAction("Crop image");
+// 		if (menu.exec(_cameraViewWidget.mapToGlobal(point)) == cropImageAction)
+// 		{
+// 			_cropHandler.activate();
+// 			_cameraViewWidget.update(); // To render the hint text
+// 		}
+// 	});
 
 	_cameraViewWidget.installEventFilter(&_cropHandler);
 	connect(&_cropHandler, &CCropFrameHandler::cropFrameEdited, [this](const QRect frame) {
