@@ -18,6 +18,7 @@ CSettingsPageCamera::CSettingsPageCamera(QWidget *parent) :
 	ui->_sbImageWidth->setValue(s.value(SETTINGS_KEY_IMAGE_WIDTH, SETTINGS_KEY_IMAGE_WIDTH_DEFAULT_VALUE).toInt());
 	ui->_sbImageHeight->setValue(s.value(SETTINGS_KEY_IMAGE_HEIGHT, SETTINGS_KEY_IMAGE_HEIGHT_DEFAULT_VALUE).toInt());
 	ui->_sbPixelValueThreshold->setValue(s.value(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD_DEFAULT_VALUE).toInt());
+	ui->_cbMirror->setChecked(s.value(SETTINGS_KEY_IMAGE_MIRRORED, SETTINGS_KEY_IMAGE_MIRRORED_DEFAULT_VALUE).toBool());
 }
 
 CSettingsPageCamera::~CSettingsPageCamera()
@@ -32,4 +33,5 @@ void CSettingsPageCamera::acceptSettings()
 	s.setValue(SETTINGS_KEY_IMAGE_WIDTH, ui->_sbImageWidth->value());
 	s.setValue(SETTINGS_KEY_IMAGE_HEIGHT, ui->_sbImageHeight->value());
 	s.setValue(SETTINGS_KEY_IMAGE_PIXEL_VALUE_THRESHOLD, ui->_sbPixelValueThreshold->value());
+	s.setValue(SETTINGS_KEY_IMAGE_MIRRORED, ui->_cbMirror->isChecked());
 }

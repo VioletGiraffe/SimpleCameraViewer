@@ -4,6 +4,7 @@
 #include "settings/settings.h"
 #include "settings/csettings.h"
 #include "updater/cupdaterdialog.h"
+#include "assert/advanced_assert.h"
 
 DISABLE_COMPILER_WARNINGS
 #include "ui_cmainwindow.h"
@@ -16,6 +17,8 @@ DISABLE_COMPILER_WARNINGS
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QVideoRendererControl>
+#include <QAbstractVideoSurface>
 RESTORE_COMPILER_WARNINGS
 
 #include <Windows.h>
@@ -220,12 +223,19 @@ void CMainWindow::applyViewFinderResolutionSettings()
 
 	const int width = CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, SETTINGS_KEY_IMAGE_WIDTH_DEFAULT_VALUE).toInt();
 	const int height = CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, SETTINGS_KEY_IMAGE_HEIGHT_DEFAULT_VALUE).toInt();
-	if (width == 0|| height == 0)
+	if (width == 0 || height == 0)
 		return;
 
 	auto settings = _camera->viewfinderSettings();
 	settings.setResolution(width, height);
 	_camera->setViewfinderSettings(settings);
+
+	QMediaService *mediaService = _cameraViewWidget.mediaObject()->service();
+	assert_and_return_r(mediaService, );
+	QVideoRendererControl *rendererControl = mediaService->requestControl<QVideoRendererControl*>();
+	QAbstractVideoSurface * surface = rendererControl->surface();
+	assert_and_return_r(surface, );
+	surface->setProperty("mirrored", CSettings().value(SETTINGS_KEY_IMAGE_MIRRORED, SETTINGS_KEY_IMAGE_MIRRORED_DEFAULT_VALUE).toBool());
 }
 
 bool CCropFrameHandler::eventFilter(QObject * target, QEvent * event)

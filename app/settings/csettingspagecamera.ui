@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>407</width>
-    <height>208</height>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Camera</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -51,104 +51,115 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="toolTip">
-           <string>Actual image width in pixels. Use this setting to crop possible garbage to the right of the image.</string>
-          </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="toolTip">
+             <string>Actual image width in pixels. Use this setting to crop possible garbage to the right of the image.</string>
+            </property>
+            <property name="text">
+             <string>Width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="_sbImageWidth">
+            <property name="toolTip">
+             <string>Actual image width in pixels. Use this setting to crop possible garbage to the right of the image.</string>
+            </property>
+            <property name="specialValueText">
+             <string>No crop</string>
+            </property>
+            <property name="accelerated">
+             <bool>true</bool>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>9999</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="toolTip">
+             <string>Actual image height in pixels. Use this setting to crop possible garbage below the image.</string>
+            </property>
+            <property name="text">
+             <string>Height</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="_sbImageHeight">
+            <property name="toolTip">
+             <string>Actual image height in pixels. Use this setting to crop possible garbage below the image.</string>
+            </property>
+            <property name="specialValueText">
+             <string>No crop</string>
+            </property>
+            <property name="accelerated">
+             <bool>true</bool>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>9999</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="toolTip">
+             <string>Average value of image pixels that indicates a non-empty image (0-255, 0 meaning entirely black image and 255 meaning entirely white).</string>
+            </property>
+            <property name="text">
+             <string>Threshold</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="_sbPixelValueThreshold">
+            <property name="toolTip">
+             <string>Average value of image pixels that indicates a non-empty image (0-255, 0 meaning entirely black image and 255 meaning entirely white).</string>
+            </property>
+            <property name="accelerated">
+             <bool>true</bool>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>255</number>
+            </property>
+            <property name="value">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="_cbMirror">
           <property name="text">
-           <string>Width</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="_sbImageWidth">
-          <property name="toolTip">
-           <string>Actual image width in pixels. Use this setting to crop possible garbage to the right of the image.</string>
-          </property>
-          <property name="specialValueText">
-           <string>No crop</string>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <number>9999</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="toolTip">
-           <string>Actual image height in pixels. Use this setting to crop possible garbage below the image.</string>
-          </property>
-          <property name="text">
-           <string>Height</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="_sbImageHeight">
-          <property name="toolTip">
-           <string>Actual image height in pixels. Use this setting to crop possible garbage below the image.</string>
-          </property>
-          <property name="specialValueText">
-           <string>No crop</string>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <number>9999</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="toolTip">
-           <string>Average value of image pixels that indicates a non-empty image (0-255, 0 meaning entirely black image and 255 meaning entirely white).</string>
-          </property>
-          <property name="text">
-           <string>Threshold</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QSpinBox" name="_sbPixelValueThreshold">
-          <property name="toolTip">
-           <string>Average value of image pixels that indicates a non-empty image (0-255, 0 meaning entirely black image and 255 meaning entirely white).</string>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <number>255</number>
-          </property>
-          <property name="value">
-           <number>10</number>
+           <string>Mirror the image</string>
           </property>
          </widget>
         </item>
@@ -161,8 +172,8 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>272</width>
-          <height>20</height>
+          <width>244</width>
+          <height>80</height>
          </size>
         </property>
        </spacer>
@@ -178,7 +189,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>8</height>
+       <height>40</height>
       </size>
      </property>
     </spacer>
