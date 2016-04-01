@@ -223,13 +223,14 @@ void CMainWindow::applyViewFinderResolutionSettings()
 
 	const int width = CSettings().value(SETTINGS_KEY_IMAGE_WIDTH, SETTINGS_KEY_IMAGE_WIDTH_DEFAULT_VALUE).toInt();
 	const int height = CSettings().value(SETTINGS_KEY_IMAGE_HEIGHT, SETTINGS_KEY_IMAGE_HEIGHT_DEFAULT_VALUE).toInt();
-	if (width == 0 || height == 0)
-		return;
+	if (width != 0 && height != 0)
+	{
+		auto settings = _camera->viewfinderSettings();
+		settings.setResolution(width, height);
+		_camera->setViewfinderSettings(settings);
+	}
 
-	auto settings = _camera->viewfinderSettings();
-	settings.setResolution(width, height);
-	_camera->setViewfinderSettings(settings);
-
+	assert_and_return_r(_cameraViewWidget.mediaObject(), );
 	QMediaService *mediaService = _cameraViewWidget.mediaObject()->service();
 	assert_and_return_r(mediaService, );
 	QVideoRendererControl *rendererControl = mediaService->requestControl<QVideoRendererControl*>();
