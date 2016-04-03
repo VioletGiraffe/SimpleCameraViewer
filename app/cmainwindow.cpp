@@ -9,6 +9,7 @@
 DISABLE_COMPILER_WARNINGS
 #include "ui_cmainwindow.h"
 
+#include <QAbstractVideoSurface>
 #include <QCamera>
 #include <QCameraInfo>
 #include <QDateTime>
@@ -18,7 +19,7 @@ DISABLE_COMPILER_WARNINGS
 #include <QMouseEvent>
 #include <QPainter>
 #include <QVideoRendererControl>
-#include <QAbstractVideoSurface>
+#include <QVideoSurfaceFormat>
 RESTORE_COMPILER_WARNINGS
 
 #include <Windows.h>
@@ -163,6 +164,20 @@ void CMainWindow::updateCamerasList()
 				_camera = std::make_shared<QCamera>(cameraInfo);
 				applyViewFinderResolutionSettings();
 				_camera->setViewfinder(&_cameraViewWidget);
+
+				QVideoRendererControl *rendererControl = _camera->service()->requestControl<QVideoRendererControl *>();
+				if (rendererControl)
+				{
+					QAbstractVideoSurface *surface = rendererControl->surface();
+					QVideoSurfaceFormat format = surface->surfaceFormat();
+					format.setProperty("mirrored", true);
+
+					surface->stop();
+					surface->start(format);
+				}
+				else
+					qDebug() << "Backend doesn't provide a video renderer control";
+
 				_camera->start();
 			}
 		}
@@ -229,14 +244,6 @@ void CMainWindow::applyViewFinderResolutionSettings()
 		settings.setResolution(width, height);
 		_camera->setViewfinderSettings(settings);
 	}
-
-	assert_and_return_r(_cameraViewWidget.mediaObject(), );
-	QMediaService *mediaService = _cameraViewWidget.mediaObject()->service();
-	assert_and_return_r(mediaService, );
-	QVideoRendererControl *rendererControl = mediaService->requestControl<QVideoRendererControl*>();
-	QAbstractVideoSurface * surface = rendererControl->surface();
-	assert_and_return_r(surface, );
-	surface->setProperty("mirrored", CSettings().value(SETTINGS_KEY_IMAGE_MIRRORED, SETTINGS_KEY_IMAGE_MIRRORED_DEFAULT_VALUE).toBool());
 }
 
 bool CCropFrameHandler::eventFilter(QObject * target, QEvent * event)
