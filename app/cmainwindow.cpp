@@ -37,15 +37,17 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	setCentralWidget(&_cameraViewWidget);
 	_cameraViewWidget.show();
 
-	_frameAnalysisTimer.start(700);
+	_frameAnalysisTimer.start(750);
 	connect(&_frameAnalysisTimer, &QTimer::timeout, this, &CMainWindow::analyzeFrame);
 
-	_camerasListUpdateTimer.start(2000);
 	connect(&_camerasListUpdateTimer, &QTimer::timeout, this, &CMainWindow::updateCamerasList);
 
 	setupTrayIcon();
 
-	updateCamerasList();
+	QTimer::singleShot(CSettings().value(SETTINGS_KEY_CAMERA_CONNECTION_DELAY, SETTINGS_KEY_CAMERA_CONNECTION_DELAY_DEFAULT_VALUE).toInt(), [&](){
+		_camerasListUpdateTimer.start(5000);
+		updateCamerasList();
+	});
 
 // 	connect(&_cameraViewWidget, &QWidget::customContextMenuRequested, [this](const QPoint& point){
 // 		QMenu menu(this);
@@ -164,20 +166,6 @@ void CMainWindow::updateCamerasList()
 				_camera = std::make_shared<QCamera>(cameraInfo);
 				applyViewFinderResolutionSettings();
 				_camera->setViewfinder(&_cameraViewWidget);
-
-				QVideoRendererControl *rendererControl = _camera->service()->requestControl<QVideoRendererControl *>();
-				if (rendererControl)
-				{
-					QAbstractVideoSurface *surface = rendererControl->surface();
-					QVideoSurfaceFormat format = surface->surfaceFormat();
-					format.setProperty("mirrored", true);
-
-					surface->stop();
-					surface->start(format);
-				}
-				else
-					qDebug() << "Backend doesn't provide a video renderer control";
-
 				_camera->start();
 			}
 		}
