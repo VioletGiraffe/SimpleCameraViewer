@@ -44,7 +44,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	setupTrayIcon();
 
-	QTimer::singleShot(CSettings().value(SETTINGS_KEY_CAMERA_CONNECTION_DELAY, SETTINGS_KEY_CAMERA_CONNECTION_DELAY_DEFAULT_VALUE).toInt(), [&](){
+	QTimer::singleShot(CSettings().value(SETTINGS_KEY_CAMERA_CONNECTION_DELAY, SETTINGS_KEY_CAMERA_CONNECTION_DELAY_DEFAULT_VALUE).toInt() * 1000, [&](){
 		_camerasListUpdateTimer.start(5000);
 		updateCamerasList();
 	});
